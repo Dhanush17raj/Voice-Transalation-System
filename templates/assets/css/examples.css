@@ -1,0 +1,22 @@
+body {
+    font-style: normal;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Light mode */
+@media (prefers-color-scheme: light) {
+    body {
+        background-image: url("C:\Users\Dhanush Joy\videojs-record-master\pexels-photo-696680.jpeg"); /* Replace with the path to your light background image */
+        background-color: #f5f5f5;
+        color: black;
+    }
+}
+
+/* Dark mode */
+@media (prefers-color-scheme: dark) {
+    body {
+        background-image: url("C:\Users\Dhanush Joy\videojs-record-master\pexels-photo-696680.jpeg"); /* Replace with the path to your dark background image */
+        background-color: #1e1e1e;
+        color: white;
+    }
+}

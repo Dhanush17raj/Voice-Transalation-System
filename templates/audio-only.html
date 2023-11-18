@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Audio-only Example - Record Plugin for Video.js</title>
+
+    <!-- Existing CSS links -->
+    <link href="../node_modules/video.js/dist/video-js.min.css" rel="stylesheet">
+    <link href="../node_modules/videojs-wavesurfer/dist/css/videojs.wavesurfer.min.css" rel="stylesheet">
+    <link href="../dist/css/videojs.record.css" rel="stylesheet">
+    <link href="assets/css/examples.css" rel="stylesheet">
+
+    <!-- <link rel="stylesheet" href="{{ url_for('static', filename='css/video-js.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/videojs.wavesurfer.min.css') }}">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/videojs.record.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/examples.css') }}"> -->
+    
+
+
+
+    <!-- Additional CSS for the players and heading -->
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-image: url("static/Images/pexels-pixabay-355747.jpg");
+            background-size: cover;
+            background-position: center;
+            font-family: Arial, Helvetica, sans-serif;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #heading {
+            color: black;
+            font-size: 4em; /* Increased size by 2 times */
+            margin-top: 17px;
+            margin-bottom: 428px;
+        }
+
+        #myAudio,
+        #voicePlayer,
+        #audioPlayer {
+            margin-top: 25px;
+            margin-bottom: 65px;
+            width: 50%;
+            z-index: 2;
+            background-color: rgba(255, 131, 0, 0);
+        }
+         /* Add the following styles to darken the play button and player bar */
+         .vjs-button-control.vjs-play-control:before {
+            color: #333; /* Darkened color (replace with your preferred color) */
+        }
+
+        #myAudio .vjs-play-progress,
+        #myAudio .vjs-volume-level {
+            background-color: #050; /* Darkened color (replace with your preferred color) */
+        }
+
+        #myAudio .vjs-control-bar {
+            background-color: #333; /* Darkened color (replace with your preferred color) */
+        }
+       
+        #button-container {
+            display: flex;
+        }   
+
+        #chooseFileLabel {
+            background-color: black;
+            color: white;
+            font-size: 1.3em;
+            padding: 7px 8px;
+            border: none;
+            cursor: pointer;
+            border-radius: 35px;
+            margin-left: 10px; /* Adjusted to shift the button to the left */
+            margin-bottom:70px;
+
+        }
+
+        #fileDisplay {
+            color: black;
+            font-size: 1.5em;
+            font-weight: bold; /* Added to make text bolder */
+            padding: 10px;
+            margin-left: 10px;
+        }
+
+        #upload {
+            background-color: black;
+            color: white;
+            font-size: 1.3em;
+            padding: 7px 8px;
+            border: none;
+            cursor: pointer;
+            border-radius: 35px;
+        }
+        
+        input[type="file"] {
+            display: none;
+        }
+    </style>
+
+    <!-- Existing JavaScript links  -->
+    <script src="../node_modules/video.js/dist/video.min.js"></script>
+    <script src="../node_modules/recordrtc/RecordRTC.js"></script>
+    <script src="../node_modules/webrtc-adapter/out/adapter.js"></script>
+    <script src="../node_modules/wavesurfer.js/dist/wavesurfer.min.js"></script>
+    <script src="../node_modules/wavesurfer.js/dist/plugin/wavesurfer.microphone.min.js"></script>
+    <script src="../node_modules/videojs-wavesurfer/dist/videojs.wavesurfer.min.js"></script>
+
+    <script src="../dist/videojs.record.js"></script>
+
+    <script src="browser-workarounds.js"></script>
+    <!-- <script src="{{ url_for('static', filename='video.js/dist/video.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='recordrtc/RecordRTC.js') }}"></script>
+    <script src="{{ url_for('static', filename='webrtc-adapter/out/adapter.js') }}"></script>
+    <script src="{{ url_for('static', filename='wavesurfer.js/dist/wavesurfer.min.js') }}"></script>
+
+    <script src="{{ url_for('static', filename='wavesurfer.js/dist/plugin/wavesurfer.microphone.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='videojs-wavesurfer/dist/videojs.wavesurfer.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='videojs.record.js') }}"></script>
+
+
+    <script src="{{ url_for('static', filename='browser-workarounds.js') }}"></script> -->
+    
+
+    <!-- Existing Style -->
+    <style>
+        /* Change player background color */
+        #myAudio {
+            background-color: (0, 0, 0, 0.5);
+        }
+    </style>
+    <style>
+        /* Style for the button */
+        .about-button {
+            position: absolute;
+            font-size: 3.0em;
+            top: 25px; /* Adjust top position */
+            right: 117px; /* Adjust right position */
+        }
+        .about-button button {
+            margin-right: 10px; /* Increase the margin between buttons */
+            font-size: 20px;
+            border: 2px solid rgb(245, 234, 234);
+            padding: 1px 2px; /* Adjusted padding if needed */
+            border-radius: 15px; /* Added border radius for curved corners */
+            cursor: pointer; 
+        }
+        .home-button {
+            position: absolute;
+            font-size: 3.0em;
+            top: 25px; /* Adjust top position */
+            right: 177px;  /* Adjust left position */
+    /* Additional styles if needed */
+        }
+        .home-button button {
+    /* Add specific styles if needed */
+            margin-right: 20px; /* Increase the margin between buttons */
+            font-size: 20px;
+            border: 2px solid rgb(245, 234, 234);
+            padding: 1px 2px; /* Adjusted padding if needed */
+            border-radius: 15px; /* Added border radius for curved corners */
+            cursor: pointer; 
+        }
+        .feedback-button {
+            position: absolute;
+            font-size: 3.0em;
+            top: 25px; /* Adjust top position */
+            right: 22px; /* Adjust right position */
+        }
+        .feedback-button button {
+            font-size: 20px;
+            border: 2px solid rgb(245, 234, 234);
+            padding: 1px 2px; /* Adjusted padding if needed */
+            border-radius: 15px; /* Added border radius for curved corners */
+            cursor: pointer; 
+        }
+    </style>
+    <style>
+        .audio-container {
+            display: flex;
+            justify-content: space-between;
+            /* position: fixed; */
+            bottom: 10;
+            left: 10;
+            width: 50%;
+            background-color:rgba(0, 0, 0, 0);
+;
+            padding: 10px;
+        }
+        .audio {
+            width: 45%;
+        }
+    </style>
+    <style>
+        .color-box {
+            position: absolute;
+            width: 38%; /* Adjust the width of the box */
+            height:40%; /* Adjust the height of the box */
+            top: 30%; /* Align with the top position */
+            border-radius: 10px; /* Add rounded corners */
+            }
+
+            /* Style for the first color box */
+            #color-box1 {
+            left: 5.2%;
+            top: 25%; /* Align with the left position of the first h4 element */
+            background-color: rgba(0, 0, 0,0.5); /* Color for the first box */
+            }
+
+            /* Style for the second color box */
+            #color-box2 {
+            left: 58.5%;
+            top: 25%;/* Align with the left position of the second h4 element */
+            background-color: rgba(0,0,0,0.5); /* Color for the second box */
+            }
+    </style>
+    <!-- ... Other styles ... -->
+    
+</head>
+<body>
+
+<!-- Aesthetic Heading -->
+<h1 id="heading" style="color: black;">Voice Translation System</h1>
+<a href="/about" class="about-button"><button>About</button></a>
+<a href="/feedback" class="feedback-button"><button>Feedback</button></a>
+<a href="/" class="home-button"><button>Home</button></a>
+
+<!-- <audio id="myAudio" class="video-js vjs-default-skin"></audio> -->
+<!-- <audio id="audioPlayer" controls class="video-js vjs-default-skin"></audio> -->
+
+<!-- <audio id="voicePlayer" class="video-js vjs-default-skin"></audio> -->
+<div id="button-container">
+    <form method="POST" action="{{url_for('predict')}}" enctype="multipart/form-data">
+        <label for="fileInput" id="chooseFileLabel">Choose file</label>
+        <!-- <div class="file-display" id="fileDisplay"></div> -->
+        <input id="fileInput" name="file" type="file" >
+        <button id="upload" type="submit" value = "predict">Upload</button>
+        <div class="box-container">
+            <div class="color-box" id="color-box1"></div>
+            <div class="color-box" id="color-box2"></div>
+            <h5 style="color: rgb(240, 240, 240); position:absolute; top: 20%; left: 6%;right:57%; font-size: 0.8cm">{{ pred1 }}</h5>
+            <h5 style="color: rgb(240, 240, 240); position:absolute; top: 20%; left: 60%; right:5%; font-size: 0.8cm">{{ pred2 }}</h5>
+          </div>
+    </form>
+</div>
+<!-- <audio id="audioPlayer" controls class="video-js vjs-default-skin"></audio> -->
+<!-- <audio controls>
+    <source src="{{ url_for('get_input_audio') }}" type="audio/mp3">
+    Your browser does not support the audio element.
+</audio>
+<audio controls>
+    <source src="{{ url_for('get_output_audio') }}" type="audio/mp3">
+    Your browser does not support the audio element.
+</audio> -->
+
+<div class="audio-container">
+    <div class="audio">
+        <audio controls>
+            <source src="{{ url_for('get_input_audio') }}" type="audio/mp3">
+            Your browser does not support the audio element.
+        </audio>
+    </div>
+    <div class="audio">
+        <audio controls>
+            <source src="{{ url_for('get_output_audio') }}" type="audio/mp3">
+            Your browser does not support the audio element.
+        </audio>
+    </div>
+</div>
+
+
+
+<script>
+    /* eslint-disable */
+    var options = {
+        controls: true,
+        bigPlayButton: false,
+        width: 600,
+        height: 300,
+        fluid: false,
+        plugins: {
+            wavesurfer: {
+                backend: 'WebAudio',
+                waveColor: '#36393b',
+                progressColor: 'black',
+                displayMilliseconds: true,
+                debug: true,
+                cursorWidth: 1,
+                hideScrollbar: true,
+                plugins: [
+                    // enable microphone plugin
+                    WaveSurfer.microphone.create({
+                        bufferSize: 4096,
+                        numberOfInputChannels: 1,
+                        numberOfOutputChannels: 1,
+                        constraints: {
+                            video: false,
+                            audio: true
+                        }
+                    })
+                ]
+            },
+            record: {
+                audio: true,
+                video: false,
+                maxLength: 6,
+                displayMilliseconds: true,
+                debug: true
+            }
+        }
+    };
+
+    // apply audio workarounds for certain browsers
+    applyAudioWorkaround();
+
+    // create player
+    var player = videojs('myAudio', options, function() {
+        // print version information at startup
+        var msg = 'Using video.js ' + videojs.VERSION +
+            ' with videojs-record ' + videojs.getPluginVersion('record') +
+            ', videojs-wavesurfer ' + videojs.getPluginVersion('wavesurfer') +
+            ', wavesurfer.js ' + WaveSurfer.VERSION + ' and recordrtc ' +
+            RecordRTC.version;
+        videojs.log(msg);
+    });
+    var fileInput = document.getElementById('fileInput');
+    var fileDisplay = document.getElementById('fileDisplay');
+
+    fileInput.addEventListener('change', function () {
+        // Check if files are selected
+        if (fileInput.files.length > 0) {
+            // Display the first selected file name
+            fileDisplay.textContent = fileInput.files[0].name;
+        } else {
+            // If no file is selected, clear the display
+            fileDisplay.textContent = '';
+        }
+    });
+
+    // error handling
+    player.on('deviceError', function() {
+        console.log('device error:', player.deviceErrorCode);
+    });
+
+    player.on('error', function(element, error) {
+        console.error(error);
+    });
+
+    // user clicked the record button and started recording
+    player.on('startRecord', function() {
+        console.log('started recording!');
+    });
+
+    // user completed recording and stream is available
+    player.on('finishRecord', function() {
+        // the blob object contains the recorded data that
+        // can be downloaded by the user, stored on the server, etc.
+        console.log('finished recording: ', player.recordedData);
+    });
+    player.on('finishRecord', function () {
+        // Check if recorded data is available and is a Blob
+        if (player.recordedData instanceof Blob) {
+            var blob = player.recordedData;
+            var url = URL.createObjectURL(blob);
+
+            // Create a link element and trigger a download
+            var a = document.createElement('a');
+            a.href = url;
+            a.download = 'recorded-audio.wav'; // You can change the filename and extension
+            a.click();
+
+            // Release the object URL after the download
+            URL.revokeObjectURL(url);
+        } else {
+            console.log('No valid recorded data available.');
+        }
+    });
+    // Create a new instance of AudioContext for the voice player
+    var audioContext = new (window.AudioContext || window.webkitAudioContext)();
+
+    // Create an audio element for the voice player
+    var voicePlayer = document.getElementById('voicePlayer');
+
+    // Load a sample WAV file for the voice player
+    fetch("/home/dhanush/Documents/ML/MinorProject/static/audio/output.mp3") // Replace with the actual path
+        .then(response => response.arrayBuffer())
+        .then(buffer => audioContext.decodeAudioData(buffer))
+        .then(decodedData => {
+            var source = audioContext.createBufferSource();
+            source.buffer = decodedData;
+            source.connect(audioContext.destination);
+            voicePlayer.srcObject = audioContext.createMediaStreamDestination().stream;
+            source.connect(audioContext.createMediaStreamDestination());
+            source.start();
+        })
+        .catch(error => console.error('Error loading WAV file:', error));
+    // Load a sample WAV file for the voice player
+
+    // Set the source of the audio player to a sample MP3 file
+    // document.getElementById('audioPlayer').src = "/home/dhanush/Documents/ML/MinorProject/static/audio/output.mp3";
+    // Bind displayFileName function to fileInput change event
+    fileInput.addEventListener('change', displayFileName);
+
+</script>
+</body>
+</html>

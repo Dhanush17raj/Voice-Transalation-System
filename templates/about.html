@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Audio-only Example - Record Plugin for Video.js</title>
+
+    <!-- Existing CSS links -->
+    <!-- <link href="../node_modules/video.js/dist/video-js.min.css" rel="stylesheet">
+    <link href="../node_modules/videojs-wavesurfer/dist/css/videojs.wavesurfer.min.css" rel="stylesheet">
+    <link href="../dist/css/videojs.record.css" rel="stylesheet">
+    <link href="assets/css/examples.css" rel="stylesheet"> -->
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/video-js.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/videojs.wavesurfer.min.css') }}">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/videojs.record.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/examples.css') }}">
+    
+
+
+
+    <!-- Additional CSS for the players and heading -->
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-image: url("static/Images/pexels-pixabay-355747.jpg");
+            background-size: cover;
+            background-position: center;
+            font-family: Arial, Helvetica, sans-serif;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #heading {
+            color: black;
+            font-size: 4em; /* Increased size by 2 times */
+            margin-top: -162px;
+        }
+
+        #myAudio,
+        #voicePlayer,
+        #audioPlayer {
+            margin-top: 25px;
+            margin-bottom: 65px;
+            width: 50%;
+            z-index: 2;
+            background-color: rgba(255, 131, 0, 0);
+        }
+         /* Add the following styles to darken the play button and player bar */
+         .vjs-button-control.vjs-play-control:before {
+            color: #333; /* Darkened color (replace with your preferred color) */
+        }
+
+        #myAudio .vjs-play-progress,
+        #myAudio .vjs-volume-level {
+            background-color: #050; /* Darkened color (replace with your preferred color) */
+        }
+
+        #myAudio .vjs-control-bar {
+            background-color: #333; /* Darkened color (replace with your preferred color) */
+        }
+       
+        #button-container {
+            display: flex;
+        }   
+
+        #chooseFileLabel {
+            background-color: black;
+            color: white;
+            font-size: 1.3em;
+            padding: 7px 8px;
+            border: none;
+            cursor: pointer;
+            border-radius: 35px;
+            margin-left: 0; /* Adjusted to shift the button to the left */
+
+        }
+
+        #fileDisplay {
+            color: black;
+            font-size: 1.5em;
+            font-weight: bold; /* Added to make text bolder */
+            padding: 10px;
+            margin-left: 10px;
+        }
+
+        #upload {
+            background-color: black;
+            color: white;
+            font-size: 1.3em;
+            padding: 7px 8px;
+            border: none;
+            cursor: pointer;
+            border-radius: 35px;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+    </style>
+    
+
+    <!-- Existing JavaScript links -->
+    <!-- <script src="../node_modules/video.js/dist/video.min.js"></script>
+    <script src="../node_modules/recordrtc/RecordRTC.js"></script>
+    <script src="../node_modules/webrtc-adapter/out/adapter.js"></script>
+    <script src="../node_modules/wavesurfer.js/dist/wavesurfer.min.js"></script>
+    <script src="../node_modules/wavesurfer.js/dist/plugin/wavesurfer.microphone.min.js"></script>
+    <script src="../node_modules/videojs-wavesurfer/dist/videojs.wavesurfer.min.js"></script>
+
+    <script src="../dist/videojs.record.js"></script>
+
+    <script src="browser-workarounds.js"></script> -->
+    <script src="{{ url_for('static', filename='video.js/dist/video.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='recordrtc/RecordRTC.js') }}"></script>
+    <script src="{{ url_for('static', filename='webrtc-adapter/out/adapter.js') }}"></script>
+    <script src="{{ url_for('static', filename='wavesurfer.js/dist/wavesurfer.min.js') }}"></script>
+
+    <script src="{{ url_for('static', filename='wavesurfer.js/dist/plugin/wavesurfer.microphone.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='videojs-wavesurfer/dist/videojs.wavesurfer.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='videojs.record.js') }}"></script>
+
+
+    <script src="{{ url_for('static', filename='browser-workarounds.js') }}"></script>
+    
+
+    <!-- Existing Style -->
+    <style>
+        /* Change player background color */
+        #myAudio {
+            background-color: (0, 0, 0, 0.5);
+        }
+    </style>
+     <style>
+        /* Style for the button */
+        .about-button {
+            position: absolute;
+            font-size: 3.3em;
+            top: 35px; /* Adjust top position */
+            right: 110px; /* Adjust right position */
+        }
+        .about-button button {
+            font-size: 22px;
+            border: none; /* Remove border */
+            background-color: transparent; /* Set background to transparent */
+            padding: 0; /* Remove padding */
+            cursor: pointer; 
+        }
+    </style>
+    <style>
+        /* Center the text horizontally and set font size */
+        .about-content {
+            text-align: center; /* Center the text horizontally */
+            font-size: 28px; /* Set the font size */
+            /* Additional styles if needed */
+            margin-bottom: 250px;
+            color: rgb(30, 110, 10);
+        }
+    </style>
+        <!-- .home-button {
+            position: absolute;
+            font-size: 3.3em;
+            top: 35px; /* Adjust top position */
+            right: 165px;  /* Adjust left position */
+    /* Additional styles if needed */
+        }
+        .home-button button {
+    /* Add specific styles if needed */
+            font-size: 22px;
+            border: none; /* Remove border */
+            background-color: transparent; /* Set background to transparent */
+            padding: 0; /* Remove padding */
+            cursor: pointer; 
+        }
+        .feedback-button {
+            position: absolute;
+            font-size: 3.3em;
+            top: 35px; /* Adjust top position */
+            right: 67px; /* Adjust right position */
+        }
+        .feedback-button button {
+            font-size: 20px;
+            border: none; /* Remove border */
+            background-color: transparent; /* Set background to transparent */
+            padding: 0; /* Remove padding */
+            cursor: pointer; 
+        }
+    </style> -->
+    <style>
+        .about-button {
+            position: absolute;
+            font-size: 3.0em;
+            top: 25px; /* Adjust top position */
+            right: 117px; /* Adjust right position */
+        }
+        .about-button button {
+            margin-right: 10px; /* Increase the margin between buttons */
+            font-size: 20px;
+            border: 2px solid rgb(245, 234, 234);
+            padding: 1px 2px; /* Adjusted padding if needed */
+            border-radius: 15px; /* Added border radius for curved corners */
+            cursor: pointer; 
+        }
+        .home-button {
+            position: absolute;
+            font-size: 3.0em;
+            top: 25px; /* Adjust top position */
+            right: 110px;  /* Adjust left position */
+    /* Additional styles if needed */
+        }
+        .home-button button {
+    /* Add specific styles if needed */
+            margin-right: 20px; /* Increase the margin between buttons */
+            font-size: 20px;
+            border: 2px solid rgb(245, 234, 234);
+            padding: 1px 2px; /* Adjusted padding if needed */
+            border-radius: 15px; /* Added border radius for curved corners */
+            cursor: pointer; 
+        }
+        .feedback-button {
+            position: absolute;
+            font-size: 3.0em;
+            top: 25px; /* Adjust top position */
+            right: 22px; /* Adjust right position */
+        }
+        .feedback-button button {
+            font-size: 20px;
+            border: 2px solid rgb(245, 234, 234);
+            padding: 1px 2px; /* Adjusted padding if needed */
+            border-radius: 15px; /* Added border radius for curved corners */
+            cursor: pointer; 
+        }
+    </style>
+</head>
+<body>
+    <a href="/" class="home-button"><button>Home</button></a>
+    <a href="/feedback" class="feedback-button"><button>Feedback</button></a>
+    <h1 id="heading">About Us</h1>
+    <p class="about-content">This is the content of the about page. It will be centered horizontally and have a font size of 18px.</p>
+</body>
+</html>
