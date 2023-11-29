@@ -1,1 +1,1 @@
-# Voice-Transalation-System
+# Voice-Translation-System
