@@ -1,5 +1,5 @@
 # Voice-Translation-System
-Voice Translation System (VTS) designed to break down language
+Voice Translation System (VTS) is designed to break down language
 barriers by providing real-time translation of spoken language from one language to another [English to Spanish].
 <br>
 <br>
