@@ -17,3 +17,9 @@ The Voice Translation System represents a significant advancement in the field o
 <br>
 #
 ![Screenshot from 2023-12-09 17-59-54](https://github.com/Dhanush17raj/Voice-Translation-System/assets/76429389/0306b5eb-01ac-460e-8c32-22d6d35953da)
+<br>
+#
+
+https://github.com/Dhanush17raj/Voice-Translation-System/assets/76429389/1af6fd5b-520d-4b16-a85e-ca76fbbf8548
+
+
